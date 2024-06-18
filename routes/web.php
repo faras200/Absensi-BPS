@@ -9,6 +9,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PenggajianController;
 use App\Http\Controllers\LaporanAbsenController;
 use App\Http\Controllers\AdministratorController;
+use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LaporanPenggajianController;
 
 /*
@@ -62,3 +63,5 @@ Route::get('absensi/absen', [AbsenController::class, 'tambah'])->middleware('aut
 Route::get('absensi/{tgl_absen}/edit', [AbsenController::class, 'edit'])->middleware('auth');
 Route::post('absensi/{tgl_absen}/edit', [AbsenController::class, 'update'])->middleware('auth');
 Route::delete('absensi/{id}', [AbsenController::class, 'delete'])->middleware('auth');
+
+Route::get('device', [DeviceController::class, 'index'])->middleware('auth');

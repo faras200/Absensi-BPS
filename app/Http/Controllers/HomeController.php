@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Absen;
+use App\Models\Device;
 use App\Models\Karyawan;
 
 class HomeController extends Controller
@@ -28,7 +29,7 @@ class HomeController extends Controller
         return view('dashboard', [
             'absens' => Absen::where('tgl_absen', now()->format('Y-m-d'))->get(),
             'karyawans' => Karyawan::all(),
-            'users' => User::all(),
+            'devices' => Device::all(),
 
         ]);
     }

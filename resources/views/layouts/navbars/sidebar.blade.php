@@ -91,12 +91,17 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/absensi">
-                        <i class="ni ni-collection text-default"></i> {{ __('Absensi') }}
+                        <i class="ni ni-collection text-info"></i> {{ __('Absensi') }}
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/penggajian">
-                        <i class="ni ni-planet text-blue"></i> {{ __('Penggajian') }}
+                        <i class="ni ni-planet text-success"></i> {{ __('Penggajian') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/device">
+                        <i class="ni ni-settings-gear-65 text-default"></i> {{ __('Mesin Finger') }}
                     </a>
                 </li>
 
