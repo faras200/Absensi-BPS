@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\IclockController;
 */
 
 Route::resource('api-karyawan', App\Http\Controllers\Api\KaryawanController::class);
-Route::resource('absensi', App\Http\Controllers\Api\AbsenController::class);
+// Route::resource('absensi', App\Http\Controllers\Api\AbsenController::class);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

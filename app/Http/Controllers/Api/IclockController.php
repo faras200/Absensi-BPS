@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Throwable;
 use App\Models\Absen;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
@@ -48,7 +49,7 @@ class IclockController extends Controller
     // request absensi
     public function receiveRecords(Request $request)
     {
-
+        // return "OK: " . '1';
 
         // cek validasi device fingerprint berdasarkan serial number
         $cek = DB::table('devices')->select('id')->where('no_sn', '=', $request->SN)->first();
@@ -62,9 +63,16 @@ class IclockController extends Controller
         $arr = preg_split('/\\r\\n|\\r|,|\\n/', $content);
         $jml = count($arr);
 
+
         foreach ($arr as $rey) {
             // $jam = $req[1];
             $req = preg_split('/\\t\\n|\\t|,|\\n/', $rey);
+            if (trim($req[0]) == 'OPLOG') {
+                return "OK: " . '1';
+            } elseif (trim($req[0]) == 'USER PIN') {
+                DB::table('request_log')->insert(['content' => $req, 'type' => 'new-user']);
+                return "OK: " . '1';
+            }
             $jam = date('H:i:s', strtotime($req[1]));
             $tgl = date('Y-m-d', strtotime($req[1]));
             $code = trim($req[0]);

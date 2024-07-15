@@ -26,22 +26,210 @@ class LaporanAbsenController extends Controller
         $user = Auth::user();
         if ($request->ajax()) {
 
+            // $absen = Karyawan::select(
+            //     'karyawan.*',
+            //     'status_karyawan.name as status_karyawan',
+            //     DB::raw('COUNT(absen.karyawan_id) as total_masuk'),
+            //     DB::raw('SUM(CASE WHEN absen.status = "telat" THEN 1 ELSE 0 END) as total_telat'),
+            //     // DB::raw('SUM(status_karyawan.uang_makan) as total_uang_makan'),
+            //     DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) < 9 THEN status_karyawan.uang_makan / 2 ELSE status_karyawan.uang_makan END) as total_uang_makan'),
+
+            //     DB::raw('SUM(TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar)) as jam_kerja'),
+            //     DB::raw('SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) - 9)) as jam_lembur'),
+            //     DB::raw('(SELECT SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) - 9)) FROM absen WHERE absen.karyawan_id = karyawan.id) as total_jam_lembur'),
+            //     DB::raw('SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) - 9)) * status_karyawan.uang_lembur as total_uang_lembur')
+            // )
+            //     ->leftJoin('absen', 'karyawan.id', '=', 'absen.karyawan_id')
+            //     ->leftJoin('status_karyawan', 'karyawan.status_id', '=', 'status_karyawan.id')
+            //     ->whereIn('absen.status', ['masuk', 'telat']);
+
+            //     $absen = Karyawan::select(
+            //         'karyawan.*',
+            //         'status_karyawan.name as status_karyawan',
+            //         DB::raw('COUNT(absen.karyawan_id) as total_masuk'),
+            //         DB::raw('SUM(CASE WHEN absen.status = "telat" THEN 1 ELSE 0 END) as total_telat'),
+            //         DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) < 9 THEN status_karyawan.uang_makan / 2 ELSE status_karyawan.uang_makan END) as total_uang_makan'),
+
+            //         // Jam kerja
+            //         DB::raw('SUM(TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar)) as jam_kerja'),
+
+            //         // Perhitungan lembur shift pagi dan malam
+            //         DB::raw('FLOOR(SUM(GREATEST(0, 
+            // CASE 
+            //     WHEN absen.jam_masuk >= "07:00:00" AND absen.jam_masuk < "17:00:00" AND TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) > 9 THEN TIMESTAMPDIFF(MINUTE, absen.jam_masuk, absen.jam_keluar) - 540
+            //     WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) > 8 THEN TIMESTAMPDIFF(MINUTE, absen.jam_masuk, absen.jam_keluar) - 480
+            //     ELSE 0
+            // END) / 60)) as jam_lembur'),
+
+            //         // Total jam lembur per karyawan
+            //         DB::raw('(SELECT FLOOR(SUM(GREATEST(0, 
+            // CASE 
+            //     WHEN absen.jam_masuk >= "07:00:00" AND absen.jam_masuk < "17:00:00" AND TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) > 9 THEN TIMESTAMPDIFF(MINUTE, absen.jam_masuk, absen.jam_keluar) - 540
+            //     WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) > 8 THEN TIMESTAMPDIFF(MINUTE, absen.jam_masuk, absen.jam_keluar) - 480
+            //     ELSE 0
+            // END) / 60)) FROM absen WHERE absen.karyawan_id = karyawan.id) as total_jam_lembur'),
+
+            //         // Total uang lembur
+            //         DB::raw('FLOOR(SUM(GREATEST(0, 
+            // CASE 
+            //     WHEN absen.jam_masuk >= "07:00:00" AND absen.jam_masuk < "17:00:00" AND TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) > 9 THEN TIMESTAMPDIFF(MINUTE, absen.jam_masuk, absen.jam_keluar) - 540
+            //     WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) > 8 THEN TIMESTAMPDIFF(MINUTE, absen.jam_masuk, absen.jam_keluar) - 480
+            //     ELSE 0
+            // END) / 60)) * status_karyawan.uang_lembur as total_uang_lembur')
+            //     )
+            //         ->leftJoin('absen', 'karyawan.id', '=', 'absen.karyawan_id')
+            //         ->leftJoin('status_karyawan', 'karyawan.status_id', '=', 'status_karyawan.id')
+            //         ->whereIn('absen.status', ['masuk', 'telat']);
+
             $absen = Karyawan::select(
                 'karyawan.*',
                 'status_karyawan.name as status_karyawan',
                 DB::raw('COUNT(absen.karyawan_id) as total_masuk'),
                 DB::raw('SUM(CASE WHEN absen.status = "telat" THEN 1 ELSE 0 END) as total_telat'),
-                // DB::raw('SUM(status_karyawan.uang_makan) as total_uang_makan'),
-                DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) < 9 THEN status_karyawan.uang_makan / 2 ELSE status_karyawan.uang_makan END) as total_uang_makan'),
+                // DB::raw('SUM(CASE WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) < 9 THEN status_karyawan.uang_makan / 2 ELSE status_karyawan.uang_makan END) as total_uang_makan'),
+                DB::raw('SUM(CASE 
+                WHEN TIME(absen.jam_masuk) BETWEEN "08:00:00" AND "17:00:00" 
+                    THEN 
+                        CASE 
+                            WHEN
+                                FLOOR(
+                                    CASE 
+                                        WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                            (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                                        ELSE 
+                                            TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                                    END
+                                ) >= 9 
+                                THEN status_karyawan.uang_makan 
+                            ELSE status_karyawan.uang_makan / 2 
+                        END
+                ELSE 
+                    CASE 
+                        WHEN 
+                            FLOOR(
+                                CASE 
+                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                                    ELSE 
+                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                                END
+                            ) >= 8            
+                        THEN status_karyawan.uang_makan 
+                        ELSE status_karyawan.uang_makan / 2 
+                    END
+                END) as total_uang_makan'),
+                // DB::raw('SEC_TO_TIME(SUM(
 
-                DB::raw('SUM(TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar)) as jam_kerja'),
-                DB::raw('SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) - 9)) as jam_lembur'),
-                DB::raw('(SELECT SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) - 9)) FROM absen WHERE absen.karyawan_id = karyawan.id) as total_jam_lembur'),
-                DB::raw('SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, absen.jam_keluar) - 9)) * status_karyawan.uang_lembur as total_uang_lembur')
+                //                 CASE 
+                //                     WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(absen.jam_masuk) THEN 
+                //                         (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                //                     ELSE 
+                //                         TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                //                 END
+
+                //         )) as jam_kerja'),
+                DB::raw('SEC_TO_TIME(SUM(
+                CASE 
+                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")))
+                    ELSE 
+                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00")))
+                END
+            )) as jam_kerja'),
+                //             DB::raw('SEC_TO_TIME(SUM(
+
+                //         GREATEST(0, 
+                //             CASE 
+                //                 WHEN absen.jam_masuk >= "07:00:00" AND absen.jam_masuk < "17:00:00" THEN 
+                //                     CASE 
+                //                         WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                //                             (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+                //                         ELSE 
+                //                             TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+                //                     END
+                //                 ELSE 
+                //                     CASE 
+                //                         WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                //                             (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+                //                         ELSE 
+                //                             TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+                //                     END
+                //             END
+                //         ) / 60
+
+                // )) as jam_lembur'),
+                DB::raw('SEC_TO_TIME(
+                            SUM(
+                                IF(
+                                    GREATEST(0, 
+                                        CASE 
+                                            WHEN GREATEST(absen.jam_masuk, "08:00:00") >= "08:00:00" AND GREATEST(absen.jam_masuk, "08:00:00") < "17:00:00" THEN 
+                                                CASE 
+                                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) - 540 * 60
+                                                    ELSE 
+                                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) - 540 * 60
+                                                END
+                                            ELSE 
+                                                CASE 
+                                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) - 480 * 60
+                                                    ELSE 
+                                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) - 480 * 60
+                                                END
+                                        END
+                                    ) >= 3600, -- Hanya akumulasi jika lembur >= 1 jam (3600 detik)
+                                    GREATEST(0, 
+                                        CASE 
+                                            WHEN GREATEST(absen.jam_masuk, "08:00:00") >= "08:00:00" AND GREATEST(absen.jam_masuk, "08:00:00") < "17:00:00" THEN 
+                                                CASE 
+                                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) - 540 * 60
+                                                    ELSE 
+                                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) - 540 * 60
+                                                END
+                                            ELSE 
+                                                CASE 
+                                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) - 480 * 60
+                                                    ELSE 
+                                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) - 480 * 60
+                                                END
+                                        END
+                                    ),
+                                    0 -- Jika lembur kurang dari 1 jam, tidak diakumulasi
+                                )
+                            )
+                        ) as jam_lembur'),
+                DB::raw('SUM(
+        FLOOR(
+            GREATEST(0, 
+                CASE 
+                    WHEN absen.jam_masuk >= "07:00:00" AND absen.jam_masuk < "17:00:00" THEN 
+                        CASE 
+                            WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+                            ELSE 
+                                TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+                        END
+                    ELSE 
+                        CASE 
+                            WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+                            ELSE 
+                                TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+                        END
+                END
+            ) / 60
+        ) * status_karyawan.uang_lembur
+    ) as total_uang_lembur')
             )
                 ->leftJoin('absen', 'karyawan.id', '=', 'absen.karyawan_id')
                 ->leftJoin('status_karyawan', 'karyawan.status_id', '=', 'status_karyawan.id')
                 ->whereIn('absen.status', ['masuk', 'telat']);
+
+
+
 
 
 
@@ -105,6 +293,26 @@ class LaporanAbsenController extends Controller
         //     'tgl_absen' => $id
         // ]);
 
+        // $absen = Karyawan::select(
+        //     'karyawan.*',
+        //     'status_karyawan.name as status_karyawan',
+        //     'absen.jam_masuk',
+        //     DB::raw('IFNULL(absen.jam_keluar, "belum keluar") as jam_keluar'),
+        //     'absen.tgl_absen',
+        //     DB::raw('COUNT(absen.karyawan_id) as total_masuk'),
+        //     DB::raw('SUM(CASE WHEN absen.status = "telat" THEN 1 ELSE 0 END) as total_telat'),
+        //     DB::raw('CASE WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) < 9 THEN status_karyawan.uang_makan / 2 ELSE status_karyawan.uang_makan END as uang_makan'),
+        //     DB::raw('SUM(status_karyawan.uang_makan) as total_uang_makan'),
+        //     DB::raw('SUM(TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk))) as jam_kerja'),
+        //     DB::raw('SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) - 9)) as jam_lembur'),
+        //     DB::raw('SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) - 9) * status_karyawan.uang_lembur) as uang_lembur'),
+        //     DB::raw('(SELECT SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) - 9)) FROM absen WHERE absen.karyawan_id = karyawan.id) as total_jam_lembur'),
+        //     DB::raw('(SELECT SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) - 9) * status_karyawan.uang_lembur) FROM absen WHERE absen.karyawan_id = karyawan.id) as total_uang_lembur')
+        // )
+        //     ->leftJoin('absen', 'karyawan.id', '=', 'absen.karyawan_id')
+        //     ->leftJoin('status_karyawan', 'karyawan.status_id', '=', 'status_karyawan.id')
+        //     ->whereIn('absen.status', ['masuk', 'telat'])
+        //     ->where('karyawan.id', $request->id);
         $absen = Karyawan::select(
             'karyawan.*',
             'status_karyawan.name as status_karyawan',
@@ -113,18 +321,204 @@ class LaporanAbsenController extends Controller
             'absen.tgl_absen',
             DB::raw('COUNT(absen.karyawan_id) as total_masuk'),
             DB::raw('SUM(CASE WHEN absen.status = "telat" THEN 1 ELSE 0 END) as total_telat'),
-            DB::raw('CASE WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) < 9 THEN status_karyawan.uang_makan / 2 ELSE status_karyawan.uang_makan END as uang_makan'),
+            // DB::raw('CASE WHEN TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) < 9 THEN status_karyawan.uang_makan / 2 ELSE status_karyawan.uang_makan END as uang_makan'),
+            DB::raw('CASE 
+                WHEN TIME(absen.jam_masuk) BETWEEN "08:00:00" AND "17:00:00" 
+                    THEN 
+                        CASE 
+                            WHEN
+                                FLOOR(
+                                    CASE 
+                                        WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                            (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                                        ELSE 
+                                            TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                                    END
+                                ) >= 9 
+                                THEN status_karyawan.uang_makan 
+                            ELSE status_karyawan.uang_makan / 2 
+                        END
+                ELSE 
+                    CASE 
+                        WHEN 
+                            FLOOR(
+                                CASE 
+                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                                    ELSE 
+                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+                                END
+                            ) >= 8            
+                        THEN status_karyawan.uang_makan 
+                        ELSE status_karyawan.uang_makan / 2 
+                    END
+                END as uang_makan'),
             DB::raw('SUM(status_karyawan.uang_makan) as total_uang_makan'),
-            DB::raw('SUM(TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk))) as jam_kerja'),
-            DB::raw('SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) - 9)) as jam_lembur'),
-            DB::raw('SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) - 9) * status_karyawan.uang_lembur) as uang_lembur'),
-            DB::raw('(SELECT SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) - 9)) FROM absen WHERE absen.karyawan_id = karyawan.id) as total_jam_lembur'),
-            DB::raw('(SELECT SUM(GREATEST(0, TIMESTAMPDIFF(HOUR, absen.jam_masuk, IFNULL(absen.jam_keluar, absen.jam_masuk)) - 9) * status_karyawan.uang_lembur) FROM absen WHERE absen.karyawan_id = karyawan.id) as total_uang_lembur')
+
+            // // Jam kerja, dibulatkan ke bawah
+            // DB::raw('SUM(
+            //     FLOOR(
+            //         CASE 
+            //             WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+            //                 (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+            //             ELSE 
+            //                 TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 3600
+            //         END
+            //     )
+            // ) as jam_kerja'),
+
+            // // Perhitungan lembur, dibulatkan ke bawah
+            // DB::raw('SUM(
+            //     FLOOR(
+            //         GREATEST(0, 
+            //             CASE 
+            //                 WHEN GREATEST(absen.jam_masuk, "08:00:00") >= "08:00:00" AND GREATEST(absen.jam_masuk, "08:00:00") < "17:00:00" THEN 
+            //                     CASE 
+            //                         WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+            //                             (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+            //                         ELSE 
+            //                             TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+            //                     END
+            //                 ELSE 
+            //                     CASE 
+            //                         WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+            //                             (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+            //                         ELSE 
+            //                             TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+            //                     END
+            //             END
+            //         ) / 60
+            //     )
+            // ) as jam_lembur'),
+            // Jam kerja dalam format H:i
+            DB::raw('SEC_TO_TIME(SUM(
+                CASE 
+                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")))
+                    ELSE 
+                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00")))
+                END
+            )) as jam_kerja'),
+
+            // Perhitungan lembur dalam format H:i
+            DB::raw('SEC_TO_TIME(
+                            SUM(
+                                IF(
+                                    GREATEST(0, 
+                                        CASE 
+                                            WHEN GREATEST(absen.jam_masuk, "08:00:00") >= "08:00:00" AND GREATEST(absen.jam_masuk, "08:00:00") < "17:00:00" THEN 
+                                                CASE 
+                                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) - 540 * 60
+                                                    ELSE 
+                                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) - 540 * 60
+                                                END
+                                            ELSE 
+                                                CASE 
+                                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) - 480 * 60
+                                                    ELSE 
+                                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) - 480 * 60
+                                                END
+                                        END
+                                    ) >= 3600, -- Hanya akumulasi jika lembur >= 1 jam (3600 detik)
+                                    GREATEST(0, 
+                                        CASE 
+                                            WHEN GREATEST(absen.jam_masuk, "08:00:00") >= "08:00:00" AND GREATEST(absen.jam_masuk, "08:00:00") < "17:00:00" THEN 
+                                                CASE 
+                                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) - 540 * 60
+                                                    ELSE 
+                                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) - 540 * 60
+                                                END
+                                            ELSE 
+                                                CASE 
+                                                    WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                                        (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) - 480 * 60
+                                                    ELSE 
+                                                        TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) - 480 * 60
+                                                END
+                                        END
+                                    ),
+                                    0 -- Jika lembur kurang dari 1 jam, tidak diakumulasi
+                                )
+                            )
+                        ) as jam_lembur'),
+
+            // Total uang lembur
+            DB::raw('SUM(
+        FLOOR(
+            GREATEST(0, 
+                CASE 
+                    WHEN GREATEST(absen.jam_masuk, "08:00:00") >= "08:00:00" AND GREATEST(absen.jam_masuk, "08:00:00") < "17:00:00" THEN 
+                        CASE 
+                            WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+                            ELSE 
+                                TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+                        END
+                    ELSE 
+                        CASE 
+                            WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+                            ELSE 
+                                TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+                        END
+                END
+            ) / 60
+        ) * status_karyawan.uang_lembur
+    ) as uang_lembur'),
+            DB::raw('FLOOR( SUM(
+        
+            GREATEST(0, 
+                CASE 
+                    WHEN GREATEST(absen.jam_masuk, "08:00:00") >= "08:00:00" AND GREATEST(absen.jam_masuk, "08:00:00") < "17:00:00" THEN 
+                        CASE 
+                            WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+                            ELSE 
+                                TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 540
+                        END
+                    ELSE 
+                        CASE 
+                            WHEN TIME_TO_SEC(absen.jam_keluar) < TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00")) THEN 
+                                (TIME_TO_SEC(absen.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+                            ELSE 
+                                TIME_TO_SEC(TIMEDIFF(absen.jam_keluar, GREATEST(absen.jam_masuk, "08:00:00"))) / 60 - 480
+                        END
+                END
+            ) / 60
+        * status_karyawan.uang_lembur
+    )) as total_uang_lembur'),
+
+            // Total jam lembur per karyawan
+            DB::raw('(SELECT SUM(
+                        GREATEST(0, 
+                            CASE 
+                                WHEN GREATEST(a.jam_masuk, "08:00:00") >= "08:00:00" AND GREATEST(a.jam_masuk, "08:00:00") < "17:00:00" THEN 
+                                    CASE 
+                                        WHEN TIME_TO_SEC(a.jam_keluar) < TIME_TO_SEC(GREATEST(a.jam_masuk, "08:00:00")) THEN 
+                                            (TIME_TO_SEC(a.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(a.jam_masuk, "08:00:00"))) / 60 - 540
+                                        ELSE 
+                                            TIME_TO_SEC(TIMEDIFF(a.jam_keluar, GREATEST(a.jam_masuk, "08:00:00"))) / 60 - 540
+                                    END
+                                ELSE 
+                                    CASE 
+                                        WHEN TIME_TO_SEC(a.jam_keluar) < TIME_TO_SEC(GREATEST(a.jam_masuk, "08:00:00")) THEN 
+                                            (TIME_TO_SEC(a.jam_keluar) + 86400 - TIME_TO_SEC(GREATEST(a.jam_masuk, "08:00:00"))) / 60 - 480
+                                        ELSE 
+                                            TIME_TO_SEC(TIMEDIFF(a.jam_keluar, GREATEST(a.jam_masuk, "08:00:00"))) / 60 - 480
+                                    END
+                            END
+                        ) / 60) 
+                    FROM absen a WHERE a.karyawan_id = karyawan.id) as total_jam_lembur')
         )
             ->leftJoin('absen', 'karyawan.id', '=', 'absen.karyawan_id')
             ->leftJoin('status_karyawan', 'karyawan.status_id', '=', 'status_karyawan.id')
             ->whereIn('absen.status', ['masuk', 'telat'])
             ->where('karyawan.id', $request->id);
+
+
 
         // Kondisi jangka waktu
         if (!empty($request['dari']) && !empty($request['sampai'])) {

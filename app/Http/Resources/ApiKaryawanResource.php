@@ -16,7 +16,7 @@ class ApiKaryawanResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'nama' => $this->nama,
+            'nama' => $this->name,
             'status' => $this->status,
             'id_finger' => $this->id_fingerprint
         ];

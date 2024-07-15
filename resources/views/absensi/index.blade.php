@@ -28,7 +28,7 @@
                                 <h2 class=" mb-0">Absensi </h2>
                             </div>
                             <div class="col">
-                                {{-- <ul class="nav nav-pills justify-content-end">
+                                <ul class="nav nav-pills justify-content-end">
                                     <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales"
                                         data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}'
                                         data-prefix="$" data-suffix="k">
@@ -38,7 +38,7 @@
                                         </a>
                                     </li>
 
-                                </ul> --}}
+                                </ul>
                             </div>
                         </div>
 

@@ -32,22 +32,20 @@
                         </div>
                         <!-- Light table -->
                         <div class="card-body" style="padding:0; !important">
-                            <div class="table-responsive">
+                            {{-- <div class="table-responsive">
                                 <table class="table align-items-center table-flush">
                                     <thead class="thead-light">
                                         <tr>
                                             <th scope="col" class="sort" data-sort="name">No</th>
-                                            <th scope="col" class="sort" data-sort="budget">Nama</th>
-                                            <th scope="col" class="sort" data-sort="status">Kode</th>
-                                            <th scope="col">Alamat</th>
+                                            <th scope="col" class="sort" data-sort="budget">Nama Karyawan</th>
+                                            <th scope="col">Jam masuk</th>
+                                            <th scope="col">Jam keluar</th>
                                             <th scope="col" class="text-center">Absen</th>
 
                                         </tr>
                                     </thead>
-                                    <tbody class="list">
-                                        <?php
-                                        $i = 0;
-                                        ?>
+                                    <tbody id="dynamicInput" class="list">
+
                                         @foreach ($karyawans as $karyawan)
                                             <tr>
                                                 <td>
@@ -57,35 +55,43 @@
                                                     {{ $karyawan->name }}
                                                 </td>
                                                 <td>
-                                                    {{ $karyawan->code }}
+                                                    <input type="time" required class="form-control"
+                                                        id="masuk{{ $karyawan->id }}">
                                                 </td>
                                                 <td>
-                                                    {{ $karyawan->alamat }}
+                                                    <input type="time" required class="form-control"
+                                                        id="keluar{{ $karyawan->id }}">
                                                 </td>
-
                                                 <td class="text-center">
-                                                    <div class="form-group">
-                                                        <select id="role" name="absen{{ $karyawan->id }}"
-                                                            class="form-control" aria-label="With textarea"
-                                                            value="{{ old('absen') }}">
-                                                            <option value="alpha" selected>Alpha</option>
-                                                            <option value="masuk">Masuk</option>
-                                                            <option value="izin">Izin</option>
-                                                            <option value="sakit">Sakit</option>
-                                                            <option value="telat">Telat</option>
-                                                        </select>
-                                                        @error('role')
-                                                            <div class="text-danger"> {{ $message }} </div>
-                                                        @enderror
-                                                    </div>
+                                                    <select id="role" name="absen{{ $karyawan->id }}"
+                                                        class="form-control " aria-label="With textarea"
+                                                        value="{{ old('absen') }}">
+                                                        <option value="alpha" selected>Alpha</option>
+                                                        <option value="masuk">Masuk</option>
+                                                        <option value="izin">Izin</option>
+                                                        <option value="sakit">Sakit</option>
+                                                        <option value="telat">Telat</option>
+                                                    </select>
+                                                    @error('role')
+                                                        <div class="text-danger"> {{ $message }} </div>
+                                                    @enderror
+
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div> --}}
+                            <div id="dynamicInput" class="row card-body">
+
                             </div>
+
+                            <div id="addmore" class="row">
+
+                            </div>
+                            <hr>
                         </div>
-                        <div class="col-12 pb-4 pl-2">
+                        <div class="col-12 card-body">
                             <div class="text-right">
                                 <button type="submit" class="btn btn-default">Simpan</button>
                             </div>
@@ -99,3 +105,123 @@
 
     </div>
 @endsection
+@push('scripts')
+    <script type="text/javascript">
+        var karyawans = {{ Js::from($karyawans) }}
+        var i = 0;
+        $(document).ready(function() {
+
+
+            inputHtml = htmlPembelian(i);
+            $(document).ready(function() {
+                $('.use-select2').select2({
+                    theme: "bootstrap4"
+                });
+
+            });
+
+            $('#dynamicInput').html(inputHtml);
+
+        });
+
+
+        $(document).on('click', '#add', function() {
+            ++i;
+            $('#dynamicTable').append(htmlProduct(i));
+        });
+
+        function htmlPembelian(i) {
+            return `
+            <div class="col-12">
+            <table class="table table-bordered" id="dynamicTable">  
+
+        <tr>
+
+            <th style="width: 30%" >Nama Karyawan</th>
+            <th>Jam masuk</th>
+            <th>Jam keluar</th>
+            <th>Absen</th>
+            <th>Action</th>
+
+        </tr>
+
+        <tr>  
+
+            <td> <select id="category" style="width: 100%"  name="absens[` + i + `][karyawan]" class="form-control use-select2"
+                   value="{{ old('type') }}">
+                    <option value="" selected disabled>Pilih</option>` +
+                karyawans.map(function(user) {
+                    return `<option value="${user.id}">${user.name}</option>`
+                }).join('') +
+                `</select></td>  
+             <td>
+                <input type="time" required class="form-control"
+                   name="absens[` + i + `][masuk]">
+            </td>
+            <td>
+                <input type="time" required class="form-control"
+                   name="absens[` + i + `][keluar]">
+            </td>
+
+            <td>
+
+                 <select id="role" name="absens[` + i + `][status] }}"
+                    class="form-control "
+                    value="{{ old('absen') }}">
+                    <option value="masuk" selected>Masuk</option>
+                    <option value="telat">Telat</option>
+                </select>
+
+            </td>  
+
+            <td><button type="button" name="add" id="add" class="btn btn-success">Add More</button></td>  
+
+        </tr>  
+
+        </table> 
+            </div>
+            `;
+        }
+
+        function htmlProduct(i) {
+            return `
+             <tr>  
+
+            <td> <select style="width: 100%"  id="category" name="absens[` + i + `][karyawan]" class="form-control use-select2"
+                   value="{{ old('type') }}">
+                    <option value="" selected disabled>Pilih</option>` +
+                karyawans.map(function(user) {
+                    return `<option value="${user.id}">${user.name}</option>`
+                }).join('') +
+                `</select></td>  
+             <td>
+                <input type="time" required class="form-control"
+                   name="absens[` + i + `][masuk]">
+            </td>
+            <td>
+                <input type="time" required class="form-control"
+                   name="absens[` + i + `][keluar]">
+            </td>
+
+            <td>
+
+                 <select id="role" name="absens[` + i + `][status] }}"
+                    class="form-control "
+                    value="{{ old('absen') }}">
+                     <option value="masuk" selected>Masuk</option>
+                    <option value="telat">Telat</option>
+                </select>
+
+            </td>  
+
+             <td><button type="button" class="btn btn-danger remove-tr">Remove</button></td>  
+
+        </tr>  
+            `
+        }
+
+        $(document).on('click', '.remove-tr', function() {
+            $(this).parents('tr').remove();
+        });
+    </script>
+@endpush

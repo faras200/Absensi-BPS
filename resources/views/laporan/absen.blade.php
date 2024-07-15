@@ -262,12 +262,14 @@
                         }
                     },
                     {
-                        data: 'jam_kerja',
-                        name: 'jam_kerja'
+                        render: function(data, type, row) {
+                            return formatTime(row.jam_kerja);
+                        }
                     },
                     {
-                        data: 'jam_lembur',
-                        name: 'jam_lembur'
+                        render: function(data, type, row) {
+                            return formatTime(row.jam_lembur);
+                        }
                     },
                     {
                         render: function(data, type, row) {
@@ -338,23 +340,26 @@
                     var grand_total = 0;
                     var total_jam_kerja = 0;
                     var total_jam_lembur = 0;
+                    var time = "00:00:00";
+                    var jam_lembur = [];
                     var total_uang_makan = 0;
                     var total_uang_lembur = 0;
 
                     $.each(response, function(index, data) {
+
+                        jam_lembur.push(data.jam_lembur);
+
                         id = data.id;
                         nama_karyawan = data.name;
                         total_jam_kerja += parseInt(data.jam_kerja);
-                        total_jam_lembur += parseInt(data.jam_lembur);
                         total_uang_makan += parseInt(data.uang_makan);
-                        total_uang_lembur += parseInt(data.uang_lembur);
 
                         content_data += '<tr>';
                         content_data += '<td>' + data.tgl_absen + '</td>';
                         content_data += '<td>' + data.jam_masuk + '</td>';
                         content_data += '<td>' + data.jam_keluar + '</td>';
-                        content_data += '<td>' + data.jam_kerja + '</td>';
-                        content_data += '<td>' + (data.jam_lembur ?? '0') + '</td>';
+                        content_data += '<td>' + formatTime(data.jam_kerja) + '</td>';
+                        content_data += '<td>' + (formatTime(data.jam_lembur) ?? '0') + '</td>';
                         content_data += '<td>' + formatRupiah(data.uang_makan ?? '0') + '</td>';
                         content_data += '<td>' + formatRupiah(data.uang_lembur ?? '0') + '</td>';
                         content_data += '<td>' + formatRupiah((parseInt(data.uang_makan) + parseInt(data
@@ -362,6 +367,8 @@
                             '0') + '</td>';
                         content_data += '</tr>';
                     });
+                    total_jam_lembur = sumTimesToHours(jam_lembur);
+                    total_uang_lembur += parseInt(total_jam_lembur * 20000);
                     grand_total = total_uang_makan + total_uang_lembur;
 
                     content_data += "<tr>"
@@ -371,7 +378,7 @@
                             total_jam_kerja ?? '0') +
                         '</th>'
                     content_data += '<th >' + (
-                            total_jam_lembur ?? '0') +
+                            sumTimesToHoursAndMinutes(jam_lembur) ?? '0') +
                         '</th>'
                     content_data += '<th>' + formatRupiah(
                             total_uang_makan ?? '0') +
@@ -383,15 +390,7 @@
                             grand_total ?? '0') +
                         '</th>'
                     content_data += "</tr>"
-                    // content_data += "<tr>"
-                    // content_data += "<th>GRANDTOTAL</th>"
 
-                    // content_data += '<th colspan="6"></th>'
-                    // content_data += '<th id="grandtotal">' +
-                    //     formatRupiah(
-                    //         grand_total ?? '0') +
-                    //     '</th>'
-                    // content_data += "</tr>"
 
                     $('#contentnya').html(content_data);
                     $('#nama_karyawan').html(nama_karyawan);
@@ -417,6 +416,109 @@
 
             rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
             return rupiah ? "Rp. " + rupiah : "";
+        }
+
+        function sumTimesToHours(times) {
+            // Fungsi untuk memeriksa dan memisahkan jam, menit, dan detik dari string waktu
+            function parseTime(time) {
+                // Default nilai jika input tidak sesuai
+                const defaultTime = {
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0
+                };
+
+                // Periksa apakah waktu sesuai dengan format yang diharapkan
+                if (typeof time !== 'string' || !/^(\d{2}):(\d{2}):(\d{2})$/.test(time)) {
+                    console.error('Invalid time format:', time);
+                    return defaultTime;
+                }
+
+                // Pisahkan jam, menit, dan detik dari string waktu
+                const parts = time.split(':');
+                return {
+                    hours: parseInt(parts[0], 10),
+                    minutes: parseInt(parts[1], 10),
+                    seconds: parseInt(parts[2], 10)
+                };
+            }
+
+            let totalSeconds = 0;
+
+            // Iterasi melalui setiap waktu dalam array
+            for (const time of times) {
+                const t = parseTime(time);
+
+                // Hitung total detik dari waktu saat ini dan tambahkan ke total
+                totalSeconds += t.hours * 3600 + t.minutes * 60 + t.seconds;
+            }
+
+            // Konversikan total detik ke total jam dan bulatkan ke bawah
+            const totalHours = Math.floor(totalSeconds / 3600);
+
+            return totalHours;
+        }
+
+        function sumTimesToHoursAndMinutes(times) {
+            // Fungsi untuk memeriksa dan memisahkan jam, menit, dan detik dari string waktu
+            function parseTime(time) {
+                // Default nilai jika input tidak sesuai
+                const defaultTime = {
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0
+                };
+
+                // Periksa apakah waktu sesuai dengan format yang diharapkan
+                if (typeof time !== 'string' || !/^(\d{2}):(\d{2}):(\d{2})$/.test(time)) {
+                    console.error('Invalid time format:', time);
+                    return defaultTime;
+                }
+
+                // Pisahkan jam, menit, dan detik dari string waktu
+                const parts = time.split(':');
+                return {
+                    hours: parseInt(parts[0], 10),
+                    minutes: parseInt(parts[1], 10),
+                    seconds: parseInt(parts[2], 10)
+                };
+            }
+
+            let totalSeconds = 0;
+
+            // Iterasi melalui setiap waktu dalam array
+            for (const time of times) {
+                const t = parseTime(time);
+
+                // Hitung total detik dari waktu saat ini dan tambahkan ke total
+                totalSeconds += t.hours * 3600 + t.minutes * 60 + t.seconds;
+            }
+
+            // Konversikan total detik ke total jam dan menit
+            const totalHours = Math.floor(totalSeconds / 3600);
+            const totalMinutes = Math.floor((totalSeconds % 3600) / 60);
+
+            return `${totalHours} jam ${totalMinutes} menit`;
+        }
+
+        function formatTime(time) {
+            const [hours, minutes, seconds] = time.split(':').map(Number);
+            let formattedTime = '';
+
+            if (hours > 0) {
+                formattedTime += `${hours} jam `;
+            }
+
+            if (minutes > 0) {
+                formattedTime += `${minutes} menit`;
+            }
+
+            if (formattedTime === '') {
+                return '0';
+            }
+
+            // Trim the trailing space if there's any
+            return formattedTime.trim();
         }
 
         $("#cetakexcel").click(() => {

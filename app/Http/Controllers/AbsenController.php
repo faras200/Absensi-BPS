@@ -57,19 +57,19 @@ class AbsenController extends Controller
     public function tambah()
     {
         return view('absensi.tambah', [
-            'karyawans' => Karyawan::all()
+            'karyawans' => Karyawan::get()
         ]);
     }
 
     public function store(Request $request)
     {
-        foreach (Karyawan::all() as $list) {
-            Absen::create([
-                'karyawan_id' => $list->id,
-                'jam_masuk' => now()->format('H:i:s'),
-                'jam_keluar' => now()->format('H:i:s'),
+        foreach ($request->absens as $key => $value) {
+            $absensi[] = Absen::create([
+                'karyawan_id' => $value['karyawan'],
+                'jam_masuk' => date('H:i:s', strtotime($value['masuk'])),
+                'jam_keluar' => date('H:i:s', strtotime($value['keluar'])),
                 'tgl_absen' => $request->input('tgl_absen'),
-                'status'  => $request->input('absen' . $list->id),
+                'status'  => $value['status'],
             ]);
         }
 

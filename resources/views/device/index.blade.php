@@ -75,7 +75,7 @@
                                         <th scope="col" class="sort" data-sort="status">Nama</th>
                                         <th scope="col" class="sort" data-sort="status">Lokasi</th>
                                         <th scope="col" class="sort" data-sort="status">Online Terakhir</th>
-                                        <th scope="col" class="text-center" data-sort="completion">Aksi</th>
+                                        {{-- <th scope="col" class="text-center" data-sort="completion">Aksi</th> --}}
 
                                     </tr>
                                 </thead>
@@ -158,22 +158,22 @@
                         data: 'online',
                         name: 'online'
                     },
-                    {
-                        render: function(data, type, row) {
-                            return '<div style="text-align: right;">' +
-                                // '<a href="/absensi/' + row.tgl_absen +
-                                // '/edit" class="btn btn-icon btn-primary btn-sm" type="button">' +
-                                // '<span class="btn-inner--icon">Ubah <i class="fas fa-edit text-white"></i></span></a> ' +
-                                '<form class="d-inline" action="/absensi/' + row.id +
-                                '" method="post" onsubmit="return confirm(\'Yakin ingin hapus?\');" style="display: inline;"> ' +
-                                '@method('delete') @csrf ' +
-                                '<button type="submit" class="btn btn-icon btn-danger btn-sm">' +
-                                '<span class="btn-inner--icon">Hapus <i class="fas fa-trash-alt"></i></span>' +
-                                '</button></form>' +
-                                '</div>';
-                        }
+                    // {
+                    //     render: function(data, type, row) {
+                    //         return '<div style="text-align: right;">' +
+                    //             // '<a href="/absensi/' + row.tgl_absen +
+                    //             // '/edit" class="btn btn-icon btn-primary btn-sm" type="button">' +
+                    //             // '<span class="btn-inner--icon">Ubah <i class="fas fa-edit text-white"></i></span></a> ' +
+                    //             '<form class="d-inline" action="/absensi/' + row.id +
+                    //             '" method="post" onsubmit="return confirm(\'Yakin ingin hapus?\');" style="display: inline;"> ' +
+                    //             '@method('delete') @csrf ' +
+                    //             '<button type="submit" class="btn btn-icon btn-danger btn-sm">' +
+                    //             '<span class="btn-inner--icon">Hapus <i class="fas fa-trash-alt"></i></span>' +
+                    //             '</button></form>' +
+                    //             '</div>';
+                    //     }
 
-                    }
+                    // }
 
                 ]
             });

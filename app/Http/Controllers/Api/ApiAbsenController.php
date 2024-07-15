@@ -102,11 +102,13 @@ class AbsenController extends Controller
     public function show($id)
     {
         $Absen = Absen::find($id);
-        dd($Absen->karyawan->nama);
+
         if (is_null($Absen)) {
-            return response()->json('Data not found', 404);
+            return response()->json(['message' => 'Data not found from api'], 404);
         }
-        return response()->json([new AbsenResource($Absen)]);
+
+        // Jika kamu ingin menggunakan AbsenResource, pastikan untuk mengimpor dan menggunakannya dengan benar
+        return response()->json(new AbsenResource($Absen));
     }
 
     /**
